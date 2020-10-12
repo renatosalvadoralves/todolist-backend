@@ -1,67 +1,75 @@
-import Task, { ITaskSchema } from '@models/Task'
-import Project from '@models/Project'
-import { ITaskRepository } from '@repositories/ITaskRepository'
-import { ICreateRequestDTO } from '@useCases/task/create/CreateDTO'
-import { IProjectByIdRequestDTO } from '@useCases/projectById/ProjectByIdDTO'
-import { ITaskByIdRequestDTO } from '@useCases/task/taskById/TaskByIdDTO'
-import { IUserByIdRequestDTO } from '@useCases/userById/UserByIdDTO'
-import { IUpdateRequestDTO } from '@useCases/task/update/UpdateDTO'
+import Task, { ITaskSchema } from "@models/Task";
+import Project from "@models/Project";
+import { ITaskRepository } from "@repositories/ITaskRepository";
+import { ICreateRequestDTO } from "@useCases/task/create/CreateDTO";
+import { IProjectByIdRequestDTO } from "@useCases/projectById/ProjectByIdDTO";
+import { ITaskByIdRequestDTO } from "@useCases/task/taskById/TaskByIdDTO";
+import { IUserByIdRequestDTO } from "@useCases/userById/UserByIdDTO";
+import { IUpdateRequestDTO } from "@useCases/task/update/UpdateDTO";
 
 export class DbTaskRepository implements ITaskRepository {
-  async readSingle (taskId: ITaskByIdRequestDTO): Promise<ITaskSchema[]> {
+  async readSingle(taskId: ITaskByIdRequestDTO): Promise<ITaskSchema> {
     try {
-      return await Task.find({ _id: taskId })
+      return await Task.findOne({ _id: taskId });
     } catch (error) {
-      throw new Error('Something went wrong')
+      throw new Error("Something went wrong");
     }
   }
 
-  async create (
+  async readList(userId: IUserByIdRequestDTO): Promise<ITaskSchema[]> {
+    try {
+      return await Task.find({ user: userId });
+    } catch (error) {
+      throw new Error("Something went wrong");
+    }
+  }
+
+  async create(
     data: ICreateRequestDTO,
     user: IUserByIdRequestDTO,
     project: IProjectByIdRequestDTO
   ): Promise<string> {
     try {
-      const task = new Task({ ...data, user, project })
-      await task.save()
-      return task._id
+      const task = new Task({ ...data, user, project });
+      await task.save();
+      return task._id;
     } catch (error) {
-      throw new Error('Something went wrong')
+      throw new Error("Something went wrong");
     }
   }
 
-  async addRowProject (
+  async addRowProject(
     projectId: IProjectByIdRequestDTO,
     taskId: ITaskByIdRequestDTO
   ): Promise<void> {
     try {
-      await Project.update({ _id: projectId }, { $push: { tasks: taskId } })
+      await Project.update({ _id: projectId }, { $push: { tasks: taskId } });
     } catch (error) {
-      throw new Error('Something went wrong')
+      throw new Error("Something went wrong");
     }
   }
 
-  async delete (task: ITaskSchema): Promise<void> {
+  async delete(task: ITaskSchema): Promise<void> {
     try {
-      await task.remove()
-      await Project.update({ _id: project }, { $push: { tasks: task._id } })
+      await task.remove();
+      await Project.update({ _id: project }, { $push: { tasks: task._id } });
     } catch (error) {
-      throw new Error('Something went wrong')
+      throw new Error("Something went wrong");
     }
   }
 
-  async deleteRowProject (
+  async deleteRowProject(
     taskId: ITaskByIdRequestDTO,
     userId: IUserByIdRequestDTO
   ): Promise<void> {
     try {
-      await Project.update({ user: userId }, { $pull: { tasks: taskId } })
+      await Project.update({ user: userId }, { $pull: { tasks: taskId } });
     } catch (error) {
-      throw new Error('Something went wrong')
+      throw new Error("Something went wrong");
     }
   }
 
-  async update (
+  async update(
     data: IUpdateRequestDTO,
     taskId: ITaskByIdRequestDTO
   ): Promise<void> {
@@ -69,19 +77,19 @@ export class DbTaskRepository implements ITaskRepository {
       await Task.findOneAndUpdate(
         { _id: taskId },
         { isCompleted: data.isCompleted }
-      )
+      );
     } catch (error) {
-      throw new Error('Something went wrong')
+      throw new Error("Something went wrong");
     }
   }
 
-  async findById (taskId: ITaskByIdRequestDTO): Promise<ITaskSchema> {
+  async findById(taskId: ITaskByIdRequestDTO): Promise<ITaskSchema> {
     try {
       return await Task.findById({
-        _id: taskId
-      }).populate('project')
+        _id: taskId,
+      }).populate("project");
     } catch (error) {
-      throw new Error('Something went wrong')
+      throw new Error("Something went wrong");
     }
   }
 }

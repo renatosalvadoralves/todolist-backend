@@ -1,26 +1,25 @@
-import { NextFunction, Request, Response } from 'express'
-import { IUserByIdRequestDTO } from './UserByIdDTO'
-import { UserByIdUseCase } from './UserByIdUseCase'
+import { NextFunction, Request, Response } from "express";
+import { IUserByIdRequestDTO } from "./UserByIdDTO";
+import { UserByIdUseCase } from "./UserByIdUseCase";
 
 export class UserByIdController {
-  constructor (private userByIdUseCase: UserByIdUseCase) {}
+  constructor(private userByIdUseCase: UserByIdUseCase) {}
 
-  async handle (
+  async handle(
     request: Request,
     response: Response,
     next: NextFunction,
     id: IUserByIdRequestDTO
   ): Promise<void | Response> {
     try {
-      const profile = await this.userByIdUseCase.execute(id)
-      request.profile = profile
+      const profile = await this.userByIdUseCase.execute(id);
+      request.profile = profile;
 
-      return next()
+      return next();
     } catch (err) {
-      console.log(err, 'err')
       return response.status(400).json({
-        message: err.message || 'Unexpected error.'
-      })
+        message: err.message || "Unexpected error.",
+      });
     }
   }
 }

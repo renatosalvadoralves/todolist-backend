@@ -1,14 +1,14 @@
-import { IProjectRepository } from '@repositories/IProjectRepository'
-import { IProjectByIdRequestDTO } from '@useCases/projectById/ProjectByIdDTO'
-import { IUpdateRequestDTO } from './UpdateDTO'
+import { IProjectRepository } from "@repositories/IProjectRepository";
+import { IProjectByIdRequestDTO } from "@useCases/projectById/ProjectByIdDTO";
+import { IUpdateRequestDTO } from "./UpdateDTO";
 
 export class UpdateUseCase {
-  constructor (private projectRepository: IProjectRepository) {}
+  constructor(private projectRepository: IProjectRepository) {}
 
-  async execute (
+  async execute(
     data: IUpdateRequestDTO,
     projectId: IProjectByIdRequestDTO
   ): Promise<void> {
-    return await this.projectRepository.update(data, projectId)
+    await this.projectRepository.update(data, projectId);
   }
 }
